@@ -5,7 +5,7 @@ mongoose.set("strictQuery", true);
 
 const professeursRoutes = require("./routes/professeurs-routes");
 // const coursRoutes = require("./routes/cours-routes");
-// const etudiantsRoutes = require("./routes/etudiants-routes");
+const etudiantsRoutes = require("./routes/etudiants-routes");
 
 const HttpErreur = require("./models/http-erreur");
 
@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 // app.use("/api/cours", coursRoutes);
 app.use("/api/professeurs", professeursRoutes);
-// app.use("/api/etudiants", etudiantsRoutes);
+app.use("/api/etudiants", etudiantsRoutes);
 
 app.use((requete, reponse, next) => {
   return next(new HttpErreur("Route non trouvée", 404));
