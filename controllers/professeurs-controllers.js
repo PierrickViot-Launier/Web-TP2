@@ -55,7 +55,7 @@ const supprimerProfesseur = async (requete, reponse, next) => {
   let professeur;
 
   try {
-    professeur = await Professeur.findById(professeurId);
+    professeur = await Professeur.findById(professeurId).populate("cours");
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression du professeur", 500)
@@ -68,7 +68,12 @@ const supprimerProfesseur = async (requete, reponse, next) => {
 
   try {
     await professeur.remove();
+
     // Enlever le professeur d'un cours
+
+    professeur.cours.professeur.pull(professeur);
+
+    await professeur.cours.save();
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression du professeur", 500)

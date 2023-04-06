@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 
 const professeursRoutes = require("./routes/professeurs-routes");
-// const coursRoutes = require("./routes/cours-routes");
+const coursRoutes = require("./routes/cours-routes");
 const etudiantsRoutes = require("./routes/etudiants-routes");
 
 const HttpErreur = require("./models/http-erreur");
@@ -13,7 +13,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-// app.use("/api/cours", coursRoutes);
+app.use("/api/cours", coursRoutes);
 app.use("/api/professeurs", professeursRoutes);
 app.use("/api/etudiants", etudiantsRoutes);
 
