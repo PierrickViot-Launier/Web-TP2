@@ -5,11 +5,22 @@ const { v4: uuidv4 } = require("uuid");
 const HttpErreur = require("../models/http-erreur");
 
 const Etudiant = require("../models/etudiant");
+const Cours = require("../models/cours");
 
 const creerEtudiant = async (requete, reponse, next) => {
   const { prenom, nom, DA } = requete.body;
 
-  //TODO: Empecher de recréer le meme etudiant
+  let etudiantExiste;
+
+  try {
+    etudiantExiste = await Etudiant.findOne({ DA: DA });
+  } catch {
+    return next(new HttpErreur("Échec vérification etudiant existe", 500));
+  }
+
+  if (etudiantExiste) {
+    return next(new HttpErreur("L'etudiant existe déjà", 422));
+  }
 
   const nouvelEtudiant = new Etudiant({
     prenom,
@@ -101,15 +112,26 @@ const addCourse = async (requete, reponse, next) => {
 
   const etudiantId = requete.params.etudiantId;
 
-  let etudiant;
+  let etudiant, course;
+
+  etudiant = await Etudiant.findById(etudiantId);
+
+  if (!etudiant) {
+    return next(new HttpErreur("Impossible de trouver l'étudiant", 404));
+  }
+
+  course = await Cours.findById(cours);
+
+  if (!course) {
+    return next(new HttpErreur("Impossible de trouver le cours", 404));
+  }
 
   try {
-    //TODO: Ajouter etudiant a un cours
-    etudiant = await Etudiant.findById(etudiantId);
-
     etudiant.cours.push(cours);
+    course.etudiant.push(etudiant);
 
     await etudiant.save();
+    await course.save();
   } catch {
     new HttpErreur("Erreur lors de l'ajout de cours", 500);
   }

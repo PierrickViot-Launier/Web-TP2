@@ -6,8 +6,7 @@ const etudiantSchema = new Schema({
   prenom: { type: String, required: true },
   nom: { type: String, required: true },
   DA: { type: String, required: true },
-  cours: [{ type: String }],
-  //   cours: [{type: mongoose.Types.ObjectId, ref:"Cours"}]
+  cours: [{ type: mongoose.Types.ObjectId, ref: "Cours" }],
 });
 
 module.exports = mongoose.model("Etudiant", etudiantSchema);

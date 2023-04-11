@@ -11,10 +11,7 @@ const coursSchema = new Schema({
     required: true,
     ref: "Professeur",
   },
-
-  etudiant: [{ type: String }],
-
-  // etudiant: [{type: mongoose.Types.ObjectId, ref:"Etudiant"}]
+  etudiant: [{ type: mongoose.Types.ObjectId, ref: "Etudiant" }],
 });
 
 module.exports = mongoose.model("Cours", coursSchema);
