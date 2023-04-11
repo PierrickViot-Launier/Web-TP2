@@ -42,7 +42,7 @@ const getProfesseurById = async (requete, reponse, next) => {
 
   if (!professeur) {
     return next(
-      new HttpErreur("Aucun professeur trouvée pour l'id fourni", 404)
+      new HttpErreur("Aucun professeur trouvé pour l'id fourni", 404)
     );
   }
 
@@ -67,9 +67,8 @@ const supprimerProfesseur = async (requete, reponse, next) => {
   }
 
   try {
+    // Supprimer le professeur du cours
     await professeur.remove();
-
-    // Enlever le professeur d'un cours
 
     professeur.cours.professeur.pull(professeur);
 
@@ -80,7 +79,7 @@ const supprimerProfesseur = async (requete, reponse, next) => {
     );
   }
 
-  reponse.status(200).json({ message: "Professeur supprimée" });
+  reponse.status(200).json({ message: "Professeur supprimé" });
 };
 
 const updateProfesseur = async (requete, reponse, next) => {

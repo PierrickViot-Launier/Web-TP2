@@ -7,7 +7,6 @@ const professeurSchema = new Schema({
   nom: { type: String, required: true },
   dateEmbauche: { type: String, required: true },
   cours: [{ type: mongoose.Types.ObjectId, ref: "Cours" }],
-  // cours: {type: mongoose.Types.ObjectId,  ref:"Cours"}
 });
 
 module.exports = mongoose.model("Professeur", professeurSchema);

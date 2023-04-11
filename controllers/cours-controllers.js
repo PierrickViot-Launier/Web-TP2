@@ -44,4 +44,74 @@ const creerCours = async (requete, reponse, next) => {
   reponse.status(201).json({ cours: nouveauCours.toObject({ getters: true }) });
 };
 
+const getCourseById = async (requete, reponse, next) => {
+  const courseId = requete.params.courseId;
+
+  let cours;
+
+  try {
+    cours = await Cours.findById(courseId);
+  } catch (err) {
+    return next(new HttpErreur("Erreur lors de la récupération du cours", 500));
+  }
+
+  if (!cours) {
+    return next(new HttpErreur("Aucun cours trouvé pour l'id fourni", 404));
+  }
+
+  reponse.json({ cours: cours.toObject({ getters: true }) });
+};
+
+const updateCourse = async (requete, reponse, next) => {
+  const { dateDebut, dateFin } = requete.body;
+
+  const courseId = requete.params.courseId;
+
+  let cours;
+
+  try {
+    cours = await Cours.findById(courseId);
+
+    cours.dateDebut = dateDebut;
+    cours.dateFin = dateFin;
+
+    await cours.save();
+  } catch {
+    new HttpErreur("Erreur lors de la mise à jour du cours", 500);
+  }
+
+  reponse.status(200).json({ cours: cours.toObject({ getters: true }) });
+};
+
+const supprimerCours = async (requete, reponse, next) => {
+  const courseId = requete.params.courseId;
+
+  let cours;
+
+  try {
+    cours = await Cours.findById(courseId).populate("professeur");
+  } catch {
+    return next(new HttpErreur("Erreur lors de la suppression du cours", 500));
+  }
+
+  if (!cours) {
+    return next(new HttpErreur("Impossible de trouver le cours", 404));
+  }
+
+  try {
+    await cours.remove();
+
+    cours.professeur.cours.pull(cours);
+
+    await cours.professeur.save();
+  } catch {
+    return next(new HttpErreur("Erreur lors de la suppression du cours", 500));
+  }
+
+  reponse.status(200).json({ message: "Cours supprimé" });
+};
+
 exports.creerCours = creerCours;
+exports.getCourseById = getCourseById;
+exports.updateCourse = updateCourse;
+exports.supprimerCours = supprimerCours;
