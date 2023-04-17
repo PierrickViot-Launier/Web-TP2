@@ -84,7 +84,7 @@ const supprimerEtudiant = async (requete, reponse, next) => {
   let etudiant;
 
   try {
-    etudiant = await Etudiant.findById(etudiantId);
+    etudiant = await Etudiant.findById(etudiantId).populate("cours");
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression de l'étudiant", 500)
@@ -96,7 +96,8 @@ const supprimerEtudiant = async (requete, reponse, next) => {
   }
 
   try {
-    await etudiant.remove();
+    // await etudiant.remove();
+    console.log(etudiant.cours.etudiant); //undefined
     //TODO: Enlever l'etudiant d'un cours
   } catch {
     return next(

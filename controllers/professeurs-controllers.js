@@ -68,11 +68,12 @@ const supprimerProfesseur = async (requete, reponse, next) => {
 
   try {
     // Supprimer le professeur du cours
-    await professeur.remove();
+    // await professeur.remove();
 
-    professeur.cours.professeur.pull(professeur);
+    // professeur.cours.professeur.pull(professeur);
 
-    await professeur.cours.save();
+    // await professeur.cours.save();
+    console.log(professeur.cours.professeur); // undefined
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression du professeur", 500)
