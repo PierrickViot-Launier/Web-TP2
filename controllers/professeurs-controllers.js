@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const HttpErreur = require("../models/http-erreur");
 
 const Professeur = require("../models/professeur");
+const Etudiant = require("../models/etudiant");
 
 const creerProfesseur = async (requete, reponse, next) => {
   const { prenom, nom, dateEmbauche } = requete.body;
@@ -64,28 +65,40 @@ const getProfesseurById = async (requete, reponse, next) => {
 const supprimerProfesseur = async (requete, reponse, next) => {
   const professeurId = requete.params.professeurId;
 
-  let professeur;
+  let professeur1, cours1, etudiant1;
 
   try {
-    professeur = await Professeur.findById(professeurId).populate("cours");
+    professeur1 = await Professeur.findById(professeurId).populate("cours");
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression du professeur", 500)
     );
   }
 
-  if (!professeur) {
+  if (!professeur1) {
     return next(new HttpErreur("Impossible de trouver le professeur", 404));
   }
 
   try {
-    // Supprimer le professeur du cours
-    await professeur.remove();
+    await professeur1.remove();
 
-    professeur.cours.professeur = null;
+    for (let i = 0; i < professeur1.cours.length; i++) {
+      cours1 = professeur1.cours[i];
 
-    await professeur.cours.save();
-    // console.log(professeur.cours.professeur); // undefined
+      if (cours1.etudiant) {
+        etudiant1 = await Etudiant.findById(cours1.etudiant).populate("cours");
+
+        for (let i = 0; i < etudiant1.cours.length; i++) {
+          etudiant1.cours[i].etudiant.pull(etudiant1);
+
+          console.log(etudiant1.cours[i].etudiant);
+
+          await etudiant1.cours[i].save();
+        }
+      }
+
+      await professeur1.cours[i].remove();
+    }
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression du professeur", 500)

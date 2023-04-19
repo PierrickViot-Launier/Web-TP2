@@ -81,27 +81,28 @@ const updateEtudiant = async (requete, reponse, next) => {
 const supprimerEtudiant = async (requete, reponse, next) => {
   const etudiantId = requete.params.etudiantId;
 
-  let etudiant;
+  let etudiant1;
 
   try {
-    etudiant = await Etudiant.findById(etudiantId).populate("cours");
+    etudiant1 = await Etudiant.findById(etudiantId).populate("cours");
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression de l'étudiant", 500)
     );
   }
 
-  if (!etudiant) {
+  if (!etudiant1) {
     return next(new HttpErreur("Impossible de trouver l'étudiant", 404));
   }
 
   try {
-    await etudiant.remove();
-    // console.log(etudiant.cours.etudiant); //undefined
-    //TODO: Enlever l'etudiant d'un cours
+    await etudiant1.remove();
 
-    etudiant.cours.etudiant.pull(etudiant);
-    etudiant.cours.save();
+    for (let i = 0; i < etudiant1.cours.length; i++) {
+      etudiant1.cours[i].etudiant.pull(etudiant1);
+
+      await etudiant1.cours[i].save();
+    }
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression de l'étudiant", 500)

@@ -98,33 +98,32 @@ const updateCourse = async (requete, reponse, next) => {
 const supprimerCours = async (requete, reponse, next) => {
   const courseId = requete.params.courseId;
 
-  let cours;
+  let cours1;
 
   try {
-    cours = await Cours.findById(courseId)
+    cours1 = await Cours.findById(courseId)
       .populate("professeur")
       .populate("etudiant");
   } catch {
     return next(new HttpErreur("Erreur lors de la suppression du cours", 500));
   }
 
-  if (!cours) {
+  if (!cours1) {
     return next(new HttpErreur("Impossible de trouver le cours", 404));
   }
 
   try {
-    // Enlever le cours a un etudiant et un prof
-    await cours.remove();
+    await cours1.remove();
 
-    cours.professeur.cours.pull(cours);
+    cours1.professeur.cours.pull(cours1);
 
-    // console.log(cours.etudiant.cours); //undefined
-    // console.log(cours.professeur.cours); //objectid
+    for (let i = 0; i < cours1.etudiant.length; i++) {
+      cours1.etudiant[i].cours.pull(cours1);
 
-    cours.etudiant.cours.pull(cours);
+      await cours1.etudiant[i].save();
+    }
 
-    await cours.professeur.save();
-    await cours.etudiant.save();
+    await cours1.professeur.save();
   } catch {
     return next(new HttpErreur("Erreur lors de la suppression du cours", 500));
   }
