@@ -113,18 +113,18 @@ const supprimerCours = async (requete, reponse, next) => {
   }
 
   try {
-    // Enlever le cours a un etudiant
-    // await cours.remove();
+    // Enlever le cours a un etudiant et un prof
+    await cours.remove();
 
-    // cours.professeur.cours.pull(cours);
+    cours.professeur.cours.pull(cours);
 
-    console.log(cours.etudiant.cours); //undefined
-    console.log(cours.professeur.cours); //objectid
+    // console.log(cours.etudiant.cours); //undefined
+    // console.log(cours.professeur.cours); //objectid
 
-    // cours.etudiant.cours.pull(cours);
+    cours.etudiant.cours.pull(cours);
 
-    // await cours.professeur.save();
-    // await cours.etudiant.save();
+    await cours.professeur.save();
+    await cours.etudiant.save();
   } catch {
     return next(new HttpErreur("Erreur lors de la suppression du cours", 500));
   }

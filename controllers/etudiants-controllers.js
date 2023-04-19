@@ -96,9 +96,12 @@ const supprimerEtudiant = async (requete, reponse, next) => {
   }
 
   try {
-    // await etudiant.remove();
-    console.log(etudiant.cours.etudiant); //undefined
+    await etudiant.remove();
+    // console.log(etudiant.cours.etudiant); //undefined
     //TODO: Enlever l'etudiant d'un cours
+
+    etudiant.cours.etudiant.pull(etudiant);
+    etudiant.cours.save();
   } catch {
     return next(
       new HttpErreur("Erreur lors de la suppression de l'étudiant", 500)
