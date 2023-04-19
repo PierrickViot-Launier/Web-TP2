@@ -11,6 +11,18 @@ const Professeur = require("../models/professeur");
 const creerCours = async (requete, reponse, next) => {
   const { nom, dateDebut, dateFin, professeur } = requete.body;
 
+  let coursExiste;
+
+  try {
+    coursExiste = await Cours.findOne({ nom: nom });
+  } catch {
+    return next(new HttpErreur("Échec vérification cours existe", 500));
+  }
+
+  if (coursExiste) {
+    return next(new HttpErreur("Le cours existe déjà", 422));
+  }
+
   const nouveauCours = new Cours({
     nom,
     dateDebut,
@@ -120,7 +132,52 @@ const supprimerCours = async (requete, reponse, next) => {
   reponse.status(200).json({ message: "Cours supprimé" });
 };
 
+const switchProfesseur = async (requete, reponse, next) => {
+  const { professeur } = requete.body;
+
+  const courseId = requete.params.courseId;
+
+  let cours, prof;
+
+  try {
+    cours = await Cours.findById(courseId).populate("professeur");
+
+    prof = await Professeur.findById(professeur);
+  } catch {
+    return next(new HttpErreur("Erreur lors de la modification du cours", 500));
+  }
+
+  if (!cours) {
+    return next(new HttpErreur("Impossible de trouver le cours", 404));
+  }
+
+  if (!prof) {
+    return next(new HttpErreur("Impossible de trouver le professeur", 404));
+  }
+
+  try {
+    cours.professeur.cours.pull(cours);
+
+    cours.professeur.save();
+
+    cours.professeur = prof;
+
+    prof.cours.push(cours);
+
+    cours.save();
+
+    prof.save();
+  } catch {
+    return next(new HttpErreur("Erreur lors de la modification du cours", 500));
+  }
+
+  reponse.status(200).json({ message: "Cours modifié" });
+};
+
+let cours;
+
 exports.creerCours = creerCours;
 exports.getCourseById = getCourseById;
 exports.updateCourse = updateCourse;
 exports.supprimerCours = supprimerCours;
+exports.switchProfesseur = switchProfesseur;

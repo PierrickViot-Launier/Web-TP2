@@ -9,6 +9,18 @@ const Professeur = require("../models/professeur");
 const creerProfesseur = async (requete, reponse, next) => {
   const { prenom, nom, dateEmbauche } = requete.body;
 
+  let profExiste;
+
+  try {
+    profExiste = await Professeur.findOne({ nom: nom, prenom: prenom });
+  } catch {
+    return next(new HttpErreur("Échec vérification professeur existe", 500));
+  }
+
+  if (profExiste) {
+    return next(new HttpErreur("Le professeur existe déjà", 422));
+  }
+
   const nouveauProfesseur = new Professeur({
     prenom,
     nom,
