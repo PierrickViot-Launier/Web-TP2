@@ -171,7 +171,7 @@ const switchProfesseur = async (requete, reponse, next) => {
     return next(new HttpErreur("Erreur lors de la modification du cours", 500));
   }
 
-  reponse.status(200).json({ message: "Cours modifié" });
+  reponse.status(200).json({ cours: cours.toObject({ getters: true }) });
 };
 
 let cours;
