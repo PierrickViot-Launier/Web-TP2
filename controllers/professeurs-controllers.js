@@ -85,17 +85,17 @@ const supprimerProfesseur = async (requete, reponse, next) => {
     for (let i = 0; i < professeur1.cours.length; i++) {
       cours1 = professeur1.cours[i];
 
-      if (cours1.etudiant) {
-        etudiant1 = await Etudiant.findById(cours1.etudiant).populate("cours");
+      // if (cours1.etudiant) {
+      //   etudiant1 = await Etudiant.findById(cours1.etudiant).populate("cours");
 
-        for (let i = 0; i < etudiant1.cours.length; i++) {
-          etudiant1.cours[i].etudiant.pull(etudiant1);
+      //   for (let i = 0; i < etudiant1.cours.length; i++) {
+      //     etudiant1.cours[i].etudiant.pull(etudiant1);
 
-          console.log(etudiant1.cours[i].etudiant);
+      //     console.log(etudiant1.cours[i].etudiant);
 
-          await etudiant1.cours[i].save();
-        }
-      }
+      //     await etudiant1.cours[i].save();
+      //   }
+      // }
 
       await professeur1.cours[i].remove();
     }
